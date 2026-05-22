@@ -53,7 +53,7 @@ function removerProduto(id) {
     return true;
 }
 
-function atualizarQuantidade(id, novaQuantidade) {
+function atualizarProduto(id, nome, quantidade, preco, categoria) {
     const produto = estoque.find(p => p.id === parseInt(id));
 
     if (!produto) {
@@ -62,21 +62,67 @@ function atualizarQuantidade(id, novaQuantidade) {
         return false;
     }
 
-    if (novaQuantidade < 0) {
-        mostrarNotificacao('❌ Quantidade não pode ser negativa', 'error');
-        adicionarLog('Tentativa de quantidade negativa', 'error');
+    const atualizacoes = [];
+    const valorQuantidade = parseInt(quantidade);
+    const valorPreco = parseFloat(preco);
+
+    if (!nome || nome.trim() === '') {
+        mostrarNotificacao('❌ Nome do produto é obrigatório', 'error');
+        adicionarLog('Tentativa de atualizar produto sem nome', 'error');
         return false;
     }
 
-    const quantidadeAnterior = produto.quantidade;
-    produto.quantidade = parseInt(novaQuantidade);
-    produto.status = novaQuantidade > 0 ? 'Disponível' : 'Indisponível';
+    if (Number.isNaN(valorQuantidade) || valorQuantidade < 0) {
+        mostrarNotificacao('❌ Quantidade inválida', 'error');
+        adicionarLog('Tentativa de atualizar produto com quantidade inválida', 'error');
+        return false;
+    }
 
-    adicionarLog(`Quantidade de "${produto.nome}" atualizada: ${quantidadeAnterior} → ${novaQuantidade}`, 'success');
-    mostrarNotificacao(`🔄 "${produto.nome}" atualizado: ${quantidadeAnterior} → ${novaQuantidade}`, 'success');
+    if (Number.isNaN(valorPreco) || valorPreco < 0) {
+        mostrarNotificacao('❌ Preço inválido', 'error');
+        adicionarLog('Tentativa de atualizar produto com preço inválido', 'error');
+        return false;
+    }
+
+    if (!categoria || categoria.trim() === '') {
+        mostrarNotificacao('❌ Categoria é obrigatória', 'error');
+        adicionarLog('Tentativa de atualizar produto sem categoria', 'error');
+        return false;
+    }
+
+    if (nome.trim() !== produto.nome) {
+        atualizacoes.push(`nome: "${produto.nome}" → "${nome.trim()}"`);
+        produto.nome = nome.trim();
+    }
+
+    if (valorQuantidade !== produto.quantidade) {
+        atualizacoes.push(`quantidade: ${produto.quantidade} → ${valorQuantidade}`);
+        produto.quantidade = valorQuantidade;
+    }
+
+    if (valorPreco !== produto.preco) {
+        atualizacoes.push(`preço: R$ ${produto.preco.toFixed(2)} → R$ ${valorPreco.toFixed(2)}`);
+        produto.preco = valorPreco;
+    }
+
+    if (categoria !== produto.categoria) {
+        atualizacoes.push(`categoria: "${produto.categoria}" → "${categoria}"`);
+        produto.categoria = categoria;
+    }
+
+    produto.status = produto.quantidade > 0 ? 'Disponível' : 'Indisponível';
+
+    if (atualizacoes.length === 0) {
+        mostrarNotificacao('⚠️ Nenhuma alteração realizada', 'warning');
+        return false;
+    }
+
+    adicionarLog(`Produto "${produto.nome}" atualizado: ${atualizacoes.join(', ')}`, 'success');
+    mostrarNotificacao(`🔄 "${produto.nome}" atualizado com sucesso`, 'success');
     renderizarProdutos(estoque);
     return true;
 }
+
 
 function buscarProduto(tipo, valor) {
     if (!valor || valor.trim() === '') {

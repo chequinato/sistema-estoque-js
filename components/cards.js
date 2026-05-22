@@ -48,7 +48,7 @@ function createProductCard(produto) {
         </div>
 
         <div class="card-actions">
-            <button class="card-btn-edit" onclick="abrirAtualizarQuantidade(${produto.id})">
+            <button class="card-btn-edit" onclick="abrirAtualizarProduto(${produto.id})">
                 ✏️ Editar
             </button>
             <button class="card-btn-delete" onclick="abrirRemoverProduto(${produto.id})">

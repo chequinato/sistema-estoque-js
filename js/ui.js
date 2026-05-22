@@ -13,12 +13,23 @@ function abrirRemoverProduto(id = null) {
     abrirModal('modal-remove-product');
 }
 
-function abrirAtualizarQuantidade(id = null) {
-    document.getElementById('form-update-quantity').reset();
+function abrirAtualizarProduto(id = null) {
+    document.getElementById('form-update-product').reset();
+
     if (id) {
-        document.getElementById('update-product-id').value = id;
+        const produto = estoque.find(p => p.id === parseInt(id));
+        if (produto) {
+            document.getElementById('update-product-id').value = produto.id;
+            document.getElementById('update-product-name').value = produto.nome;
+            document.getElementById('update-quantity').value = produto.quantidade;
+            document.getElementById('update-price').value = produto.preco.toFixed(2);
+            document.getElementById('update-category').value = produto.categoria;
+        } else {
+            document.getElementById('update-product-id').value = id;
+        }
     }
-    abrirModal('modal-update-quantity');
+
+    abrirModal('modal-update-product');
 }
 
 function abrirBuscarProduto() {
@@ -46,12 +57,16 @@ function submitRemoveProduct() {
     }
 }
 
-function submitUpdateQuantity() {
+function submitUpdateProduct() {
     const id = document.getElementById('update-product-id').value;
-    const novaQuantidade = document.getElementById('update-quantity').value;
-    if (atualizarQuantidade(id, novaQuantidade)) {
-        closeModal('modal-update-quantity');
-        document.getElementById('form-update-quantity').reset();
+    const nome = document.getElementById('update-product-name').value;
+    const quantidade = document.getElementById('update-quantity').value;
+    const preco = document.getElementById('update-price').value;
+    const categoria = document.getElementById('update-category').value;
+
+    if (atualizarProduto(id, nome, quantidade, preco, categoria)) {
+        closeModal('modal-update-product');
+        document.getElementById('form-update-product').reset();
     }
 }
 
@@ -191,8 +206,8 @@ function processarOpcaoMenu(opcao) {
             adicionarLog('Menu: Remover Produto', 'info');
             break;
         case 4:
-            abrirAtualizarQuantidade();
-            adicionarLog('Menu: Atualizar Quantidade', 'info');
+            abrirAtualizarProduto();
+            adicionarLog('Menu: Atualizar Produto', 'info');
             break;
         case 5:
             abrirBuscarProduto();
