@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estoque - Gerenciador</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR/MENU -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>📦 ESTOQUE</h1>
+                <p id="user-info">Usuário: Não autenticado</p>
+            </div>
+
+            <nav class="menu">
+                <button class="btn-menu" data-option="1" title="Adicionar novo produto">
+                    <span class="icon">➕</span>
+                    <span class="text">Adicionar Produto</span>
+                </button>
+                <button class="btn-menu" data-option="2" title="Ver todos os produtos">
+                    <span class="icon">📋</span>
+                    <span class="text">Ver Estoque</span>
+                </button>
+                <button class="btn-menu" data-option="3" title="Remover um produto">
+                    <span class="icon">🗑️</span>
+                    <span class="text">Remover Produto</span>
+                </button>
+                <button class="btn-menu" data-option="4" title="Atualizar quantidade">
+                    <span class="icon">🔄</span>
+                    <span class="text">Atualizar Quantidade</span>
+                </button>
+                <button class="btn-menu" data-option="5" title="Buscar produto">
+                    <span class="icon">🔍</span>
+                    <span class="text">Buscar Produto</span>
+                </button>
+                <button class="btn-menu" data-option="6" title="Ver produtos com estoque baixo">
+                    <span class="icon">⚠️</span>
+                    <span class="text">Estoque Baixo</span>
+                </button>
+                <button class="btn-menu" data-option="7" title="Gerar relatório do estoque">
+                    <span class="icon">📊</span>
+                    <span class="text">Relatório</span>
+                </button>
+                <button class="btn-menu" data-option="8" title="Fazer login">
+                    <span class="icon">🔐</span>
+                    <span class="text">Login</span>
+                </button>
+                <button class="btn-menu" data-option="9" title="Criar novo usuário">
+                    <span class="icon">👤</span>
+                    <span class="text">Cadastro</span>
+                </button>
+                <button class="btn-menu btn-logout" data-option="0" title="Sair do sistema">
+                    <span class="icon">🚪</span>
+                    <span class="text">Sair</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>v1.0.0</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TERMINAL/LOGS -->
+            <section class="terminal">
+                <div class="terminal-header">
+                    <h2>🖥️ TERMINAL DO SISTEMA</h2>
+                    <button class="btn-clear" id="btn-clear-logs">Limpar Logs</button>
+                </div>
+                <div class="terminal-body" id="terminal">
+                    <div class="log-entry info">
+                        > Sistema de Estoque inicializado com sucesso
+                    </div>
+                    <div class="log-entry info">
+                        > Bem-vindo ao sistema de gerenciamento de estoque
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRODUCTS AREA -->
+            <section class="products">
+                <div class="products-header">
+                    <h2>📦 PRODUTOS CADASTRADOS</h2>
+                    <span class="product-count" id="product-count">Total: 0</span>
+                </div>
+                <div class="products-grid" id="products-grid">
+                    <div class="empty-state">
+                        <p>Nenhum produto cadastrado ainda</p>
+                        <small>Clique em "Adicionar Produto" para começar</small>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- NOTIFICATIONS AREA -->
+    <div class="notifications" id="notifications"></div>
+
+    <!-- LOGIN SCREEN (BLOQUEANTE) -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>📦 SISTEMA DE ESTOQUE</h1>
+                <p>Gerenciador de Produtos</p>
+            </div>
+            
+            <!-- ABAS DE LOGIN/CADASTRO -->
+            <div class="login-tabs">
+                <button class="tab-btn active" id="tab-login" onclick="mudarAba('login')">
+                    🔐 Login
+                </button>
+                <button class="tab-btn" id="tab-register" onclick="mudarAba('register')">
+                    👤 Cadastro
+                </button>
+            </div>
+            
+            <!-- ABA DE LOGIN -->
+            <div class="login-content active" id="aba-login">
+                <h2>Faça Login</h2>
+                <p>Digite seus dados para acessar o sistema</p>
+                
+                <form id="form-login-screen" class="login-form">
+                    <div class="form-group">
+                        <label for="login-user-screen">👤 Usuário:</label>
+                        <input 
+                            type="text" 
+                            id="login-user-screen" 
+                            placeholder="Digite seu usuário" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password-screen">🔐 Senha:</label>
+                        <input 
+                            type="password" 
+                            id="login-password-screen" 
+                            placeholder="Digite sua senha" 
+                            required
+                        >
+                    </div>
+                    <button type="button" class="btn btn-primary btn-full" onclick="submitLoginScreen()">
+                        🔓 Entrar no Sistema
+                    </button>
+                </form>
+
+                <div class="login-info">
+                    <p><strong>📌 Usuários de Teste:</strong></p>
+                    <ul>
+                        <li><strong>admin</strong> / 123456</li>
+                        <li><strong>gerente</strong> / senha123</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ABA DE CADASTRO -->
+            <div class="login-content" id="aba-register">
+                <h2>Criar Conta</h2>
+                <p>Cadastre um novo usuário para acessar o sistema</p>
+                
+                <form id="form-register-screen" class="login-form">
+                    <div class="form-group">
+                        <label for="register-user-screen">👤 Novo Usuário:</label>
+                        <input 
+                            type="text" 
+                            id="register-user-screen" 
+                            placeholder="Escolha um usuário" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password-screen">🔐 Senha:</label>
+                        <input 
+                            type="password" 
+                            id="register-password-screen" 
+                            placeholder="Escolha uma senha" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-screen">✓ Confirmar Senha:</label>
+                        <input 
+                            type="password" 
+                            id="register-confirm-screen" 
+                            placeholder="Confirme a senha" 
+                            required
+                        >
+                    </div>
+                    <button type="button" class="btn btn-primary btn-full" onclick="submitRegisterScreen()">
+                        👤 Criar Conta e Entrar
+                    </button>
+                </form>
+
+                <div class="login-info">
+                    <p><strong>📌 Requisitos:</strong></p>
+                    <ul>
+                        <li>Usuário: mín. 3 caracteres</li>
+                        <li>Senha: mín. 5 caracteres</li>
+                        <li>Senhas devem coincidir</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="login-footer">
+                <p>Versão 1.0.0 | © 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Add Product Modal -->
+    <div class="modal" id="modal-add-product">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Adicionar Novo Produto</h2>
+                <button class="btn-close" onclick="closeModal('modal-add-product')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-product">
+                    <div class="form-group">
+                        <label for="product-name">Nome do Produto:</label>
+                        <input type="text" id="product-name" placeholder="Ex: Mouse Gamer" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-quantity">Quantidade:</label>
+                            <input type="number" id="product-quantity" placeholder="0" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Preço (R$):</label>
+                            <input type="number" id="product-price" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Categoria:</label>
+                        <select id="product-category" required>
+                            <option value="">-- Selecione uma categoria --</option>
+                            <option value="Periféricos">Periféricos</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Software">Software</option>
+                            <option value="Acessórios">Acessórios</option>
+                            <option value="Componentes">Componentes</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-add-product')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitAddProduct()">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Product Modal -->
+    <div class="modal" id="modal-remove-product">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🗑️ Remover Produto</h2>
+                <button class="btn-close" onclick="closeModal('modal-remove-product')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-remove-product">
+                    <div class="form-group">
+                        <label for="remove-product-id">ID do Produto:</label>
+                        <input type="number" id="remove-product-id" placeholder="Digite o ID do produto" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-remove-product')">Cancelar</button>
+                <button class="btn btn-danger" onclick="submitRemoveProduct()">Remover</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Quantity Modal -->
+    <div class="modal" id="modal-update-quantity">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔄 Atualizar Quantidade</h2>
+                <button class="btn-close" onclick="closeModal('modal-update-quantity')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-update-quantity">
+                    <div class="form-group">
+                        <label for="update-product-id">ID do Produto:</label>
+                        <input type="number" id="update-product-id" placeholder="Digite o ID" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update-quantity">Nova Quantidade:</label>
+                        <input type="number" id="update-quantity" placeholder="Digite a nova quantidade" min="0" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-update-quantity')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitUpdateQuantity()">Atualizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Product Modal -->
+    <div class="modal" id="modal-search-product">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔍 Buscar Produto</h2>
+                <button class="btn-close" onclick="closeModal('modal-search-product')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-search-product">
+                    <div class="form-group">
+                        <label for="search-type">Buscar por:</label>
+                        <select id="search-type" onchange="updateSearchFields()">
+                            <option value="id">ID</option>
+                            <option value="nome">Nome</option>
+                            <option value="categoria">Categoria</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="search-value">Valor:</label>
+                        <input type="text" id="search-value" placeholder="Digite o valor para buscar" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-search-product')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitSearchProduct()">Buscar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="modal-login">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔐 Login do Sistema</h2>
+                <button class="btn-close" onclick="closeModal('modal-login')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="login-user">Usuário:</label>
+                        <input type="text" id="login-user" placeholder="Digite seu usuário" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Senha:</label>
+                        <input type="password" id="login-password" placeholder="Digite sua senha" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-login')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitLogin()">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="modal-register">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👤 Cadastro de Usuário</h2>
+                <button class="btn-close" onclick="closeModal('modal-register')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-register">
+                    <div class="form-group">
+                        <label for="register-user">Usuário:</label>
+                        <input type="text" id="register-user" placeholder="Escolha um usuário" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Senha:</label>
+                        <input type="password" id="register-password" placeholder="Escolha uma senha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirmar Senha:</label>
+                        <input type="password" id="register-confirm-password" placeholder="Confirme sua senha" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-register')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitRegister()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal" id="modal-report">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Relatório do Estoque</h2>
+                <button class="btn-close" onclick="closeModal('modal-report')">&times;</button>
+            </div>
+            <div class="modal-body" id="report-content">
+                <!-- Preenchido dinamicamente -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('modal-report')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="components/cards.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
