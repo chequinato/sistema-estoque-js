@@ -34,7 +34,13 @@ sistema-estoque/
 │
 ├── 📄 index.html          # Estrutura HTML da aplicação
 ├── 🎨 style.css           # Estilos CSS (tema dark)
-├── ⚙️ script.js           # Lógica principal do sistema
+├── 📦 js/                # Códigos JavaScript organizados
+│   ├── data.js           # Estado global e dados inicias
+│   ├── utils.js          # Logs, notificações e modais
+│   ├── products.js       # Funções de CRUD e relatório
+│   ├── auth.js           # Login, logout e cadastro
+│   ├── ui.js             # Abas, formulários e controles de interface
+│   └── app.js            # Inicialização e eventos
 │
 ├── 📦 assets/
 │   ├── icons/             # Ícones (expansível)
