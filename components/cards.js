@@ -1,26 +1,15 @@
-// ==================== RENDERIZAÇÃO DE CARDS ====================
-
-/**
- * Cria um card de produto
- * @param {Object} produto - Objeto contendo dados do produto
- * @returns {HTMLElement} - Elemento do card
- */
 function createProductCard(produto) {
     const card = document.createElement('div');
     card.className = 'card';
     card.setAttribute('data-id', produto.id);
 
-    // Verificar se estoque está baixo
     if (produto.quantidade < 5) {
         card.classList.add('low-stock');
     }
 
-    // Determinar status
     const statusDisponivel = produto.quantidade > 0;
     const statusText = statusDisponivel ? 'Disponível' : 'Indisponível';
     const statusClass = statusDisponivel ? '' : 'unavailable';
-
-    // Calcular valor total do produto
     const valorTotal = (produto.preco * produto.quantidade).toFixed(2);
 
     card.innerHTML = `
@@ -60,10 +49,19 @@ function createProductCard(produto) {
     return card;
 }
 
-/**
- * Renderiza todos os produtos na grid
- * @param {Array} produtos - Array de produtos
- */
+function ordenarPorID(lista) {
+    for (let i = 1; i < lista.length; i++) {
+        let atual = lista[i];
+        let j = i - 1;
+        while (j >= 0 && lista[j].id > atual.id) {
+            lista[j + 1] = lista[j];
+            j--;
+        }
+        lista[j + 1] = atual;
+    }
+    return lista;
+}
+
 function renderizarProdutos(produtos) {
     const grid = document.getElementById('products-grid');
     const contador = document.getElementById('product-count');
@@ -81,21 +79,24 @@ function renderizarProdutos(produtos) {
         return;
     }
 
-    // Adicionar cada produto como card
-    produtos.forEach(produto => {
-        const card = createProductCard(produto);
+    const ordenados = ordenarPorID(produtos.slice());
+
+    for (let i = 0; i < ordenados.length; i++) {
+        const card = createProductCard(ordenados[i]);
         grid.appendChild(card);
-    });
+    }
 
     contador.textContent = `Total: ${produtos.length}`;
 }
 
-/**
- * Renderiza apenas produtos com estoque baixo
- * @param {Array} produtos - Array de produtos
- */
 function renderizarEstoqueBaixo(produtos) {
-    const produtosBaixos = produtos.filter(p => p.quantidade < 5);
+    let produtosBaixos = [];
+    for (let i = 0; i < produtos.length; i++) {
+        if (produtos[i].quantidade < 5) {
+            produtosBaixos.push(produtos[i]);
+        }
+    }
+
     const grid = document.getElementById('products-grid');
     const contador = document.getElementById('product-count');
 
@@ -112,20 +113,17 @@ function renderizarEstoqueBaixo(produtos) {
         return;
     }
 
-    produtosBaixos.forEach(produto => {
-        const card = createProductCard(produto);
+    const ordenados = ordenarPorID(produtosBaixos);
+
+    for (let i = 0; i < ordenados.length; i++) {
+        const card = createProductCard(ordenados[i]);
         grid.appendChild(card);
-    });
+    }
 
     contador.textContent = `Baixo Estoque: ${produtosBaixos.length}`;
 }
 
-/**
- * Renderiza resultados de busca
- * @param {Array} resultados - Array de produtos encontrados
- * @param {string} tipoResultado - Tipo da busca realizada
- */
-function renderizarResultadosBusca(resultados, tipoResultado) {
+function renderizarResultadosBusca(resultados) {
     const grid = document.getElementById('products-grid');
     const contador = document.getElementById('product-count');
 
@@ -142,10 +140,12 @@ function renderizarResultadosBusca(resultados, tipoResultado) {
         return;
     }
 
-    resultados.forEach(produto => {
-        const card = createProductCard(produto);
+    const ordenados = ordenarPorID(resultados.slice());
+
+    for (let i = 0; i < ordenados.length; i++) {
+        const card = createProductCard(ordenados[i]);
         grid.appendChild(card);
-    });
+    }
 
     contador.textContent = `Resultados: ${resultados.length}`;
 }

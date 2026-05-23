@@ -1,5 +1,24 @@
 // ==================== PRODUTOS ====================
 
+function obterProximoID() {
+    let candidato = 1;
+    for (let i = 0; i < estoque.length; i++) {
+        let idEmUso = false;
+        for (let j = 0; j < estoque.length; j++) {
+            if (estoque[j].id === candidato) {
+                idEmUso = true;
+                break;
+            }
+        }
+        if (idEmUso) {
+            candidato++;
+        } else {
+            break; 
+        }
+    }
+    return candidato;
+}
+
 function adicionarProduto(nome, quantidade, preco, categoria) {
     if (!nome || nome.trim() === '') {
         mostrarNotificacao('Nome do produto é obrigatório', 'error');
@@ -20,7 +39,7 @@ function adicionarProduto(nome, quantidade, preco, categoria) {
     }
 
     const novoProduto = {
-        id: proximoID++,
+        id: obterProximoID(),
         nome: nome.trim(),
         quantidade: parseInt(quantidade),
         preco: parseFloat(preco),
@@ -37,7 +56,13 @@ function adicionarProduto(nome, quantidade, preco, categoria) {
 }
 
 function removerProduto(id) {
-    const indice = estoque.findIndex(p => p.id === parseInt(id));
+    let indice = -1;
+    for (let i = 0; i < estoque.length; i++) {
+        if (estoque[i].id === parseInt(id)) {
+            indice = i;
+            break;
+        }
+    }
 
     if (indice === -1) {
         mostrarNotificacao('❌ Produto não encontrado', 'error');
@@ -54,7 +79,13 @@ function removerProduto(id) {
 }
 
 function atualizarProduto(id, nome, quantidade, preco, categoria) {
-    const produto = estoque.find(p => p.id === parseInt(id));
+    let produto = null;
+    for (let i = 0; i < estoque.length; i++) {
+        if (estoque[i].id === parseInt(id)) {
+            produto = estoque[i];
+            break;
+        }
+    }
 
     if (!produto) {
         mostrarNotificacao('❌ Produto não encontrado', 'error');
@@ -125,33 +156,46 @@ function atualizarProduto(id, nome, quantidade, preco, categoria) {
 
 
 function buscarProduto(tipo, valor) {
-    if (!valor || valor.trim() === '') {
-        mostrarNotificacao('❌ Digite um valor para buscar', 'error');
-        adicionarLog('Tentativa de busca com valor vazio', 'error');
+    let valorValidado;
+    do {
+        valorValidado = valor ? valor.trim() : '';
+        if (valorValidado === '') {
+            mostrarNotificacao('❌ Digite um valor para buscar', 'error');
+            adicionarLog('Tentativa de busca com valor vazio', 'error');
+            return [];
+        }
+    } while (false); 
+
+    let resultados = [];
+
+    if (tipo === 'id') {
+        for (let i = 0; i < estoque.length; i++) {
+            if (estoque[i].id === parseInt(valorValidado)) {
+                resultados.push(estoque[i]);
+            }
+        }
+    } else if (tipo === 'nome') {
+        for (let i = 0; i < estoque.length; i++) {
+            if (estoque[i].nome.toLowerCase().includes(valorValidado.toLowerCase())) {
+                resultados.push(estoque[i]);
+            }
+        }
+    } else if (tipo === 'categoria') {
+        for (let i = 0; i < estoque.length; i++) {
+            if (estoque[i].categoria.toLowerCase().includes(valorValidado.toLowerCase())) {
+                resultados.push(estoque[i]);
+            }
+        }
+    } else {
+        mostrarNotificacao('❌ Tipo de busca inválido', 'error');
         return [];
     }
 
-    let resultados = [];
-    switch (tipo) {
-        case 'id':
-            resultados = estoque.filter(p => p.id === parseInt(valor));
-            break;
-        case 'nome':
-            resultados = estoque.filter(p => p.nome.toLowerCase().includes(valor.toLowerCase()));
-            break;
-        case 'categoria':
-            resultados = estoque.filter(p => p.categoria.toLowerCase().includes(valor.toLowerCase()));
-            break;
-        default:
-            mostrarNotificacao('❌ Tipo de busca inválido', 'error');
-            return [];
-    }
-
     if (resultados.length === 0) {
-        adicionarLog(`Nenhum produto encontrado ao buscar ${tipo}: "${valor}"`, 'warning');
+        adicionarLog(`Nenhum produto encontrado ao buscar ${tipo}: "${valorValidado}"`, 'warning');
         mostrarNotificacao('❌ Nenhum produto encontrado', 'warning');
     } else {
-        adicionarLog(`Busca por ${tipo} "${valor}": ${resultados.length} resultado(s) encontrado(s)`, 'success');
+        adicionarLog(`Busca por ${tipo} "${valorValidado}": ${resultados.length} resultado(s) encontrado(s)`, 'success');
         mostrarNotificacao(`🔍 ${resultados.length} produto(s) encontrado(s)`, 'info');
     }
 
@@ -160,7 +204,13 @@ function buscarProduto(tipo, valor) {
 }
 
 function mostrarEstoqueBaixo() {
-    const produtosBaixos = estoque.filter(p => p.quantidade < 5);
+    let produtosBaixos = [];
+    for (let i = 0; i < estoque.length; i++) {
+        if (estoque[i].quantidade < 5) {
+            produtosBaixos.push(estoque[i]);
+        }
+    }
+
     if (produtosBaixos.length === 0) {
         adicionarLog('Nenhum produto com estoque baixo', 'info');
         mostrarNotificacao('✅ Estoque OK - Nenhum produto com quantidade baixa', 'success');
@@ -179,12 +229,42 @@ function gerarRelatorio() {
     }
 
     const totalProdutos = estoque.length;
-    const totalEmEstoque = estoque.reduce((sum, p) => sum + p.quantidade, 0);
-    const produtosBaixos = estoque.filter(p => p.quantidade < 5).length;
-    const valorTotal = estoque.reduce((sum, p) => sum + (p.preco * p.quantidade), 0);
-    const produtoMaisCaro = estoque.reduce((max, p) => p.preco > max.preco ? p : max);
-    const produtoMaisBarato = estoque.reduce((min, p) => p.preco < min.preco ? p : min);
-    const categorias = [...new Set(estoque.map(p => p.categoria))];
+
+    let totalEmEstoque = 0;
+    let valorTotal = 0;
+    let produtosBaixos = 0;
+    let produtoMaisCaro = estoque[0];
+    let produtoMaisBarato = estoque[0];
+
+    for (let i = 0; i < estoque.length; i++) {
+        totalEmEstoque += estoque[i].quantidade;
+        valorTotal += estoque[i].preco * estoque[i].quantidade;
+
+        if (estoque[i].quantidade < 5) {
+            produtosBaixos++;
+        }
+        if (estoque[i].preco > produtoMaisCaro.preco) {
+            produtoMaisCaro = estoque[i];
+        }
+        if (estoque[i].preco < produtoMaisBarato.preco) {
+            produtoMaisBarato = estoque[i];
+        }
+    }
+
+
+    let categorias = [];
+    for (let i = 0; i < estoque.length; i++) {
+        let jaExiste = false;
+        for (let j = 0; j < categorias.length; j++) {
+            if (categorias[j] === estoque[i].categoria) {
+                jaExiste = true;
+                break;
+            }
+        }
+        if (!jaExiste) {
+            categorias.push(estoque[i].categoria);
+        }
+    }
 
     const content = document.getElementById('report-content');
     let html = `
@@ -231,16 +311,20 @@ function gerarRelatorio() {
                 <span class="report-item-value">${categorias.length}</span>
             </div>
     `;
-
-    categorias.forEach(cat => {
-        const qtd = estoque.filter(p => p.categoria === cat).length;
+    for (let i = 0; i < categorias.length; i++) {
+        let qtd = 0;
+        for (let j = 0; j < estoque.length; j++) {
+            if (estoque[j].categoria === categorias[i]) {
+                qtd++;
+            }
+        }
         html += `
             <div class="report-item">
-                <span class="report-item-label">${cat}:</span>
+                <span class="report-item-label">${categorias[i]}:</span>
                 <span class="report-item-value">${qtd} produto(s)</span>
             </div>
         `;
-    });
+    }
 
     html += '</div>';
     content.innerHTML = html;

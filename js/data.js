@@ -14,4 +14,3 @@ let usuarios = [
 let estoque = [];
 let logs = [];
 let usuarioLogado = null;
-let proximoID = 1;

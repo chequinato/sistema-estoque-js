@@ -10,8 +10,8 @@ function adicionarLog(mensagem, tipo = 'info') {
     terminal.scrollTop = terminal.scrollHeight;
 
     const entries = terminal.querySelectorAll('.log-entry');
-    if (entries.length > 100) {
-        entries[0].remove();
+    for (let i = 0; i < entries.length - 100; i++) {
+        entries[i].remove();
     }
 }
 

@@ -1,14 +1,24 @@
 // ==================== AUTENTICAÇÃO ====================
 
 function loginUsuario(usuario, senha) {
-    if (!usuario || !senha) {
-        mostrarNotificacao('❌ Usuário e senha são obrigatórios', 'error');
-        adicionarLog('Tentativa de login com campos vazios', 'error');
-        return false;
+    let camposValidos;
+    do {
+        camposValidos = usuario && senha;
+        if (!camposValidos) {
+            mostrarNotificacao('❌ Usuário e senha são obrigatórios', 'error');
+            adicionarLog('Tentativa de login com campos vazios', 'error');
+            return false;
+        }
+    } while (false);
+    let userEncontrado = null;
+    for (let i = 0; i < usuarios.length; i++) {
+        if (usuarios[i].usuario === usuario && usuarios[i].senha === senha) {
+            userEncontrado = usuarios[i];
+            break;
+        }
     }
 
-    const user = usuarios.find(u => u.usuario === usuario && u.senha === senha);
-    if (!user) {
+    if (!userEncontrado) {
         adicionarLog(`Tentativa de login falhou: usuário "${usuario}"`, 'error');
         mostrarNotificacao('❌ Usuário ou senha inválidos', 'error');
         return false;
@@ -41,11 +51,15 @@ function logoutUsuario() {
 }
 
 function cadastrarUsuario(usuario, senha) {
-    if (!usuario || !senha) {
-        mostrarNotificacao('❌ Usuário e senha são obrigatórios', 'error');
-        adicionarLog('Tentativa de cadastro com campos vazios', 'error');
-        return false;
-    }
+    let dadosValidos;
+    do {
+        dadosValidos = usuario && senha;
+        if (!dadosValidos) {
+            mostrarNotificacao('❌ Usuário e senha são obrigatórios', 'error');
+            adicionarLog('Tentativa de cadastro com campos vazios', 'error');
+            return false;
+        }
+    } while (false);
 
     if (usuario.trim().length < 3) {
         mostrarNotificacao('❌ Usuário deve ter pelo menos 3 caracteres', 'error');
@@ -58,11 +72,12 @@ function cadastrarUsuario(usuario, senha) {
         adicionarLog('Tentativa de cadastro com senha fraca', 'error');
         return false;
     }
-
-    if (usuarios.find(u => u.usuario === usuario)) {
-        mostrarNotificacao('❌ Usuário já existe', 'error');
-        adicionarLog(`Tentativa de cadastro com usuário duplicado: "${usuario}"`, 'error');
-        return false;
+    for (let i = 0; i < usuarios.length; i++) {
+        if (usuarios[i].usuario === usuario) {
+            mostrarNotificacao('❌ Usuário já existe', 'error');
+            adicionarLog(`Tentativa de cadastro com usuário duplicado: "${usuario}"`, 'error');
+            return false;
+        }
     }
 
     usuarios.push({ usuario: usuario, senha: senha });

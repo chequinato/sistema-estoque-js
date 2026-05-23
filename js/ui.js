@@ -17,13 +17,20 @@ function abrirAtualizarProduto(id = null) {
     document.getElementById('form-update-product').reset();
 
     if (id) {
-        const produto = estoque.find(p => p.id === parseInt(id));
-        if (produto) {
-            document.getElementById('update-product-id').value = produto.id;
-            document.getElementById('update-product-name').value = produto.nome;
-            document.getElementById('update-quantity').value = produto.quantidade;
-            document.getElementById('update-price').value = produto.preco.toFixed(2);
-            document.getElementById('update-category').value = produto.categoria;
+        let produtoEncontrado = null;
+        for (let i = 0; i < estoque.length; i++) {
+            if (estoque[i].id === parseInt(id)) {
+                produtoEncontrado = estoque[i];
+                break;
+            }
+        }
+
+        if (produtoEncontrado) {
+            document.getElementById('update-product-id').value = produtoEncontrado.id;
+            document.getElementById('update-product-name').value = produtoEncontrado.nome;
+            document.getElementById('update-quantity').value = produtoEncontrado.quantidade;
+            document.getElementById('update-price').value = produtoEncontrado.preco.toFixed(2);
+            document.getElementById('update-category').value = produtoEncontrado.categoria;
         } else {
             document.getElementById('update-product-id').value = id;
         }
@@ -78,7 +85,7 @@ function submitSearchProduct() {
 }
 
 function updateSearchFields() {
-    // Futuro: adaptar placeholder ou UI com base no tipo
+    // fazer no futuro: adaptar placeholder ou UI com base no tipo
 }
 
 function submitLogin() {
@@ -94,11 +101,17 @@ function submitRegister() {
     const usuario = document.getElementById('register-user').value;
     const senha = document.getElementById('register-password').value;
     const confirmSenha = document.getElementById('register-confirm-password').value;
-    if (senha !== confirmSenha) {
-        mostrarNotificacao('❌ Senhas não coincidem', 'error');
-        adicionarLog('Tentativa de cadastro com senhas diferentes', 'error');
-        return;
-    }
+
+    let senhasIguais;
+    do {
+        senhasIguais = senha === confirmSenha;
+        if (!senhasIguais) {
+            mostrarNotificacao('❌ Senhas não coincidem', 'error');
+            adicionarLog('Tentativa de cadastro com senhas diferentes', 'error');
+            return;
+        }
+    } while (false);
+
     if (cadastrarUsuario(usuario, senha)) {
         closeModal('modal-register');
         document.getElementById('form-register').reset();
@@ -126,18 +139,26 @@ function desbloquearSistema() {
 
 function carregarDadosIniciais() {
     if (estoque.length === 0) {
-        adicionarProduto('Mouse Gamer RGB', 10, 150.00, 'Periféricos');
-        adicionarProduto('Teclado Mecânico', 5, 350.00, 'Periféricos');
-        adicionarProduto('Monitor 27"', 3, 1200.00, 'Hardware');
-        adicionarProduto('Headset Gamer', 8, 250.00, 'Periféricos');
-        adicionarProduto('Webcam HD', 2, 180.00, 'Hardware');
+        // Dados iniciais presentes no array assim que executar o código.
+        const produtosIniciais = [
+            { nome: 'Mouse Gamer RGB',   quantidade: 10, preco: 150.00, categoria: 'Periféricos' },
+            { nome: 'Teclado Mecânico',  quantidade: 5,  preco: 350.00, categoria: 'Periféricos' },
+            { nome: 'Monitor 27"',       quantidade: 3,  preco: 1200.00, categoria: 'Hardware'   },
+            { nome: 'Headset Gamer',     quantidade: 8,  preco: 250.00, categoria: 'Periféricos' },
+            { nome: 'Webcam HD',         quantidade: 2,  preco: 180.00, categoria: 'Hardware'    }
+        ];
+
+        for (let i = 0; i < produtosIniciais.length; i++) {
+            const p = produtosIniciais[i];
+            adicionarProduto(p.nome, p.quantidade, p.preco, p.categoria);
+        }
+
         adicionarLog('Dados de exemplo carregados', 'info');
     }
 }
 
 function limparTela() {
     estoque = [];
-    proximoID = 1;
     renderizarProdutos(estoque);
     const terminal = document.getElementById('terminal');
     terminal.innerHTML = '';
@@ -147,10 +168,16 @@ function limparTela() {
 function submitLoginScreen() {
     const usuario = document.getElementById('login-user-screen').value;
     const senha = document.getElementById('login-password-screen').value;
-    if (!usuario || !senha) {
-        mostrarNotificacao('❌ Digite usuário e senha', 'error');
-        return;
-    }
+
+    let camposPreenchidos;
+    do {
+        camposPreenchidos = usuario && senha;
+        if (!camposPreenchidos) {
+            mostrarNotificacao('❌ Digite usuário e senha', 'error');
+            return;
+        }
+    } while (false);
+
     if (loginUsuario(usuario, senha)) {
         setTimeout(() => desbloquearSistema(), 500);
         document.getElementById('form-login-screen').reset();
@@ -175,10 +202,16 @@ function submitRegisterScreen() {
     const usuario = document.getElementById('register-user-screen').value;
     const senha = document.getElementById('register-password-screen').value;
     const confirmSenha = document.getElementById('register-confirm-screen').value;
-    if (!usuario || !senha || !confirmSenha) {
-        mostrarNotificacao('❌ Preencha todos os campos', 'error');
-        return;
-    }
+
+    let todosPreenchidos;
+    do {
+        todosPreenchidos = usuario && senha && confirmSenha;
+        if (!todosPreenchidos) {
+            mostrarNotificacao('❌ Preencha todos os campos', 'error');
+            return;
+        }
+    } while (false);
+
     if (senha !== confirmSenha) {
         mostrarNotificacao('❌ Senhas não coincidem', 'error');
         adicionarLog('Tentativa de cadastro com senhas diferentes', 'error');
