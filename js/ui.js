@@ -125,8 +125,7 @@ function submitRegister() {
     const usuario = document.getElementById('register-user').value;
     const senha = document.getElementById('register-password').value;
     const confirmSenha = document.getElementById('register-confirm-password').value;
-
-    let senhasIguais;
+    
     do {
         senhasIguais = senha === confirmSenha;
         if (!senhasIguais) {
