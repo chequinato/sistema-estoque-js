@@ -1,5 +1,6 @@
 // ==================== PRODUTOS ====================
 
+// Função para obter o próximo ID disponível para um novo produto, garantindo que não haja IDs duplicados mesmo após remoções
 function obterProximoID() {
     let candidato = 1;
     for (let i = 0; i < estoque.length; i++) {
@@ -15,10 +16,12 @@ function obterProximoID() {
         } else {
             break; 
         }
+        // Aqui nesse caso criamos dois loop for: o primeiro percorre os IDs candidatos, e o segundo verifica se esse ID já está em uso no estoque. Se estiver, incrementamos o candidato e verificamos novamente, garantindo que sempre retornaremos um ID único e disponível para o próximo produto a ser adicionado.
     }
     return candidato;
 }
 
+// Função para ordenar a lista de produtos por ID, utilizando o algoritmo de ordenação por inserção
 function adicionarProduto(nome, quantidade, preco, categoria) {
     if (!nome || nome.trim() === '') {
         mostrarNotificacao('Nome do produto é obrigatório', 'error');
@@ -55,6 +58,7 @@ function adicionarProduto(nome, quantidade, preco, categoria) {
     return true;
 }
 
+// Função para remover um produto do estoque, verificando se o ID existe e atualizando a interface após a remoção
 function removerProduto(id) {
     let indice = -1;
     for (let i = 0; i < estoque.length; i++) {
@@ -78,6 +82,7 @@ function removerProduto(id) {
     return true;
 }
 
+// Função para atualizar as informações de um produto, validando os campos e registrando as alterações realizadas para fins de log
 function atualizarProduto(id, nome, quantidade, preco, categoria) {
     let produto = null;
     for (let i = 0; i < estoque.length; i++) {
@@ -155,6 +160,7 @@ function atualizarProduto(id, nome, quantidade, preco, categoria) {
 }
 
 
+// Função para buscar produtos com base em diferentes critérios (ID, nome ou categoria), validando a entrada e registrando os resultados da busca para fins de log
 function buscarProduto(tipo, valor) {
     let valorValidado;
     do {
@@ -203,6 +209,7 @@ function buscarProduto(tipo, valor) {
     return resultados;
 }
 
+// Função para mostrar os produtos com estoque baixo, verificando quais produtos estão abaixo do limite definido e atualizando a interface para destacar esses produtos
 function mostrarEstoqueBaixo() {
     let produtosBaixos = [];
     for (let i = 0; i < estoque.length; i++) {
@@ -218,9 +225,10 @@ function mostrarEstoqueBaixo() {
         adicionarLog(`${produtosBaixos.length} produto(s) com estoque baixo`, 'warning');
         mostrarNotificacao(`⚠️ ${produtosBaixos.length} produto(s) com estoque baixo`, 'warning');
     }
-    renderizarEstoqueBaixo(estoque);
+    renderizarEstoqueBaixo(produtosBaixos);
 }
 
+// Função para gerar um relatório completo do estoque, calculando estatísticas relevantes e exibindo as informações de forma organizada em um modal
 function gerarRelatorio() {
     if (estoque.length === 0) {
         adicionarLog('Relatório solicitado - estoque vazio', 'info');

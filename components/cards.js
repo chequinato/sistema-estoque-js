@@ -1,3 +1,5 @@
+
+// Função para criar um card de produto com base nos dados do produto
 function createProductCard(produto) {
     const card = document.createElement('div');
     card.className = 'card';
@@ -7,11 +9,13 @@ function createProductCard(produto) {
         card.classList.add('low-stock');
     }
 
+    // Determina o status de disponibilidade com base na quantidade
     const statusDisponivel = produto.quantidade > 0;
     const statusText = statusDisponivel ? 'Disponível' : 'Indisponível';
     const statusClass = statusDisponivel ? '' : 'unavailable';
     const valorTotal = (produto.preco * produto.quantidade).toFixed(2);
 
+    // Define o conteúdo HTML do card, incluindo informações do produto e ações
     card.innerHTML = `
         <div class="card-header">
             <div class="card-title">${produto.nome}</div>
@@ -49,6 +53,7 @@ function createProductCard(produto) {
     return card;
 }
 
+// Função para ordenar uma lista de produtos por ID usando o algoritmo de ordenação por inserção
 function ordenarPorID(lista) {
     for (let i = 1; i < lista.length; i++) {
         let atual = lista[i];
@@ -62,6 +67,7 @@ function ordenarPorID(lista) {
     return lista;
 }
 
+// Função para renderizar a lista de produtos na interface, exibindo um estado vazio se não houver produtos cadastrados
 function renderizarProdutos(produtos) {
     const grid = document.getElementById('products-grid');
     const contador = document.getElementById('product-count');
@@ -89,6 +95,8 @@ function renderizarProdutos(produtos) {
     contador.textContent = `Total: ${produtos.length}`;
 }
 
+
+// Função para renderizar apenas os produtos com estoque baixo, exibindo um estado vazio se não houver produtos nessa condição
 function renderizarEstoqueBaixo(produtos) {
     let produtosBaixos = [];
     for (let i = 0; i < produtos.length; i++) {
@@ -123,6 +131,7 @@ function renderizarEstoqueBaixo(produtos) {
     contador.textContent = `Baixo Estoque: ${produtosBaixos.length}`;
 }
 
+// Função para renderizar os resultados de uma busca, exibindo um estado vazio se não houver resultados encontrados
 function renderizarResultadosBusca(resultados) {
     const grid = document.getElementById('products-grid');
     const contador = document.getElementById('product-count');

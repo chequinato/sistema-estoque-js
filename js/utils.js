@@ -1,5 +1,6 @@
 // ==================== UTILITÁRIOS ====================
 
+// Função para adicionar uma mensagem de log ao terminal, com um tipo opcional para diferenciar mensagens de sucesso, erro, aviso ou informação
 function adicionarLog(mensagem, tipo = 'info') {
     const terminal = document.getElementById('terminal');
     const logEntry = document.createElement('div');
@@ -15,12 +16,14 @@ function adicionarLog(mensagem, tipo = 'info') {
     }
 }
 
+// Função para limpar o terminal de logs, removendo todas as entradas e adicionando um log indicando que os logs foram limpos
 function limparLogs() {
     const terminal = document.getElementById('terminal');
     terminal.innerHTML = '';
     adicionarLog('Logs limpos pelo usuário', 'info');
 }
 
+// Função para criar um card de produto, exibindo as informações do produto e destacando visualmente os produtos com estoque baixo
 function mostrarNotificacao(mensagem, tipo = 'info', duracao = 3000) {
     const container = document.getElementById('notifications');
     const notif = document.createElement('div');
@@ -46,6 +49,7 @@ function mostrarNotificacao(mensagem, tipo = 'info', duracao = 3000) {
     }, duracao);
 }
 
+// Função para realizar o login do usuário, validando os campos e verificando as credenciais
 function abrirModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -53,6 +57,7 @@ function abrirModal(modalId) {
     }
 }
 
+// Função para fechar um modal, removendo a classe que o torna visível
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {

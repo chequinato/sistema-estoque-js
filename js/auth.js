@@ -1,5 +1,6 @@
 // ==================== AUTENTICAÇÃO ====================
 
+// Função para realizar o login do usuário, validando os campos e verificando as credenciais
 function loginUsuario(usuario, senha) {
     let camposValidos;
     do {
@@ -31,6 +32,7 @@ function loginUsuario(usuario, senha) {
     return true;
 }
 
+// Função para realizar o logout do usuário, verificando se há um usuário logado e atualizando a interface
 function logoutUsuario() {
     if (!usuarioLogado) {
         mostrarNotificacao('❌ Nenhum usuário logado', 'error');
@@ -50,6 +52,7 @@ function logoutUsuario() {
     return true;
 }
 
+// Função para cadastrar um novo usuário, validando os campos, verificando a força da senha e evitando usuários duplicados
 function cadastrarUsuario(usuario, senha) {
     let dadosValidos;
     do {
@@ -78,6 +81,8 @@ function cadastrarUsuario(usuario, senha) {
             adicionarLog(`Tentativa de cadastro com usuário duplicado: "${usuario}"`, 'error');
             return false;
         }
+
+        // Aqui, não precisamos de verificação adicional de senha, pois o requisito mínimo já foi validado acima
     }
 
     usuarios.push({ usuario: usuario, senha: senha });
