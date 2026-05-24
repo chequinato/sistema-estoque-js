@@ -107,7 +107,6 @@ function updateSearchFields() {
         valorInput.placeholder = 'Digite o valor de busca';
     }
 
-    
 
 }
 
@@ -143,6 +142,25 @@ function submitRegister() {
     }
 }
 
+// Função que atualiza a visibilidade dos botões de menu conforme o estado de autenticação do usuário
+function atualizarVisibilidadeMenu() {
+    const btnLogin = document.querySelector('[data-option="8"]');
+    const btnCadastro = document.querySelector('[data-option="9"]');
+    const btnLogout = document.querySelector('[data-option="0"]');
+    
+    if (usuarioLogado) {
+        // Usuário logado: esconde login e cadastro, mostra logout
+        if (btnLogin) btnLogin.style.display = 'none';
+        if (btnCadastro) btnCadastro.style.display = 'none';
+        if (btnLogout) btnLogout.style.display = 'flex';
+    } else {
+        // Usuário não logado: mostra login e cadastro, esconde logout
+        if (btnLogin) btnLogin.style.display = 'flex';
+        if (btnCadastro) btnCadastro.style.display = 'flex';
+        if (btnLogout) btnLogout.style.display = 'none';
+    }
+}
+
 // Função que bloqueia o sistema, exibindo a tela de login e ocultando o restante da interface, garantindo que apenas usuários autenticados possam acessar as funcionalidades do sistema
 function bloquearSistema() {
     const loginScreen = document.getElementById('login-screen');
@@ -150,6 +168,7 @@ function bloquearSistema() {
     if (!usuarioLogado) {
         loginScreen.classList.remove('hidden');
         container.style.display = 'none';
+        atualizarVisibilidadeMenu();
     }
 }
 
@@ -161,6 +180,7 @@ function desbloquearSistema() {
         loginScreen.classList.add('hidden');
         container.style.display = 'flex';
         carregarDadosIniciais();
+        atualizarVisibilidadeMenu();
     }
 }
 
@@ -292,10 +312,9 @@ function processarOpcaoMenu(opcao) {
     }
     else if (opcao === 9) {
         abrirModal('modal-register');
-
         adicionarLog('Menu: Cadastro', 'info');
     }
-    else if (opcao === 10) {
+    else if (opcao === 0) {
         logoutUsuario();
         adicionarLog('Menu: Logout', 'info');
     }

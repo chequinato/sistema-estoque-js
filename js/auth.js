@@ -29,6 +29,7 @@ function loginUsuario(usuario, senha) {
     document.getElementById('user-info').textContent = `Usuário: ${usuario}`;
     adicionarLog(`Usuário "${usuario}" fez login com sucesso`, 'success');
     mostrarNotificacao(`🔓 Bem-vindo, ${usuario}!`, 'success');
+    atualizarVisibilidadeMenu();
     return true;
 }
 
@@ -44,6 +45,7 @@ function logoutUsuario() {
     document.getElementById('user-info').textContent = 'Usuário: Não autenticado';
     adicionarLog(`Usuário "${usuario}" fez logout`, 'info');
     mostrarNotificacao(`👋 Até logo, ${usuario}!`, 'info');
+    atualizarVisibilidadeMenu();
 
     setTimeout(() => {
         bloquearSistema();
